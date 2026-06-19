@@ -7,7 +7,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { store, type User, type Report } from "@/lib/store";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileDown, Mail } from "lucide-react";
+import jsPDF from "jspdf";
 
 export const Route = createFileRoute("/admin/clients/$id")({
   head: () => ({ meta: [{ title: "Client — Admin" }] }),
@@ -17,6 +18,123 @@ export const Route = createFileRoute("/admin/clients/$id")({
 const COLOURS = ["Warm", "Warm-Neutral", "Neutral", "Neutral-Cool", "Cool"];
 const METALS = ["Gold", "Rose Gold", "Silver", "Gold + Silver"];
 const FACES = ["Oval", "Square", "Triangle", "Diamond", "Inverted Triangle", "Round", "Rectangle", "Heart", "Oblong"];
+
+// ─── PDF Generation ──────────────────────────────────────────────────────────
+
+function buildPdf(user: User, report: Partial<Report>): jsPDF {
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const W = doc.internal.pageSize.getWidth();
+  const margin = 56;
+  const colRight = W - margin;
+  let y = 0;
+
+  // Top accent bar
+  doc.setFillColor(20, 20, 20);
+  doc.rect(0, 0, W, 4, "F");
+  y = 48;
+
+  // Header label
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(140, 140, 140);
+  doc.setCharSpace(2);
+  doc.text("NINE PROFILES  ·  THE PERSONAL STYLE LAB", W / 2, y, { align: "center" });
+  y += 28;
+
+  // Title
+  doc.setFont("times", "bold");
+  doc.setFontSize(28);
+  doc.setTextColor(20, 20, 20);
+  doc.setCharSpace(0);
+  doc.text("Personal Style Report", W / 2, y, { align: "center" });
+  y += 20;
+
+  // Divider
+  doc.setDrawColor(220, 220, 220);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, colRight, y);
+  y += 24;
+
+  // Prepared For
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(140, 140, 140);
+  doc.setCharSpace(2);
+  doc.text("PREPARED FOR", margin, y);
+  y += 16;
+
+  doc.setFont("times", "normal");
+  doc.setFontSize(22);
+  doc.setTextColor(20, 20, 20);
+  doc.setCharSpace(0);
+  doc.text(user.name, margin, y);
+  y += 32;
+
+  // Report rows
+  const rows = [
+    { label: "BEST COLOURS", value: report.best_colours },
+    { label: "METAL HARMONY", value: report.metal_harmony },
+    { label: "FACE SHAPE", value: report.face_shape },
+  ];
+
+  for (const row of rows) {
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.3);
+    doc.setLineDashPattern([3, 3], 0);
+    doc.line(margin, y + 4, colRight, y + 4);
+    doc.setLineDashPattern([], 0);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(140, 140, 140);
+    doc.setCharSpace(2);
+    doc.text(row.label, margin, y);
+
+    doc.setFont("times", "normal");
+    doc.setFontSize(16);
+    doc.setTextColor(20, 20, 20);
+    doc.setCharSpace(0);
+    doc.text(row.value || "—", colRight, y, { align: "right" });
+
+    y += 36;
+  }
+
+  y += 12;
+
+  // Styling Tips
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(140, 140, 140);
+  doc.setCharSpace(2);
+  doc.text("PERSONAL STYLING TIPS", margin, y);
+  y += 16;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(40, 40, 40);
+  doc.setCharSpace(0);
+
+  const tips = report.styling_tips || "No styling tips provided.";
+  const lines = doc.splitTextToSize(tips, colRight - margin);
+  doc.text(lines, margin, y);
+  y += lines.length * 14 + 32;
+
+  // Footer divider
+  doc.setDrawColor(220, 220, 220);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, colRight, y);
+  y += 18;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(140, 140, 140);
+  doc.setCharSpace(2);
+  doc.text("STYLE FOR THE LIFE YOU'RE BUILDING", W / 2, y, { align: "center" });
+
+  return doc;
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 function ClientDetail() {
   const { id } = Route.useParams();
@@ -28,6 +146,7 @@ function ClientDetail() {
     face_shape: "",
     styling_tips: "",
   });
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -41,7 +160,7 @@ function ClientDetail() {
         const existing = await store.getReportByUser(id);
         if (existing) setReport(existing);
       } catch (error) {
-        console.error('Failed to load client data:', error);
+        console.error("Failed to load client data:", error);
         navigate({ to: "/admin/dashboard" });
       }
     };
@@ -50,10 +169,14 @@ function ClientDetail() {
 
   if (!user) return null;
 
-  const handleSend = async () => {
-    if (!report.best_colours || !report.metal_harmony || !report.face_shape) {
+  const isReportComplete =
+    !!report.best_colours && !!report.metal_harmony && !!report.face_shape;
+
+  /** Save report to store, return true on success */
+  const saveReport = async (): Promise<boolean> => {
+    if (!isReportComplete) {
       toast.error("Please complete all report fields");
-      return;
+      return false;
     }
     try {
       await store.saveReport({
@@ -63,12 +186,73 @@ function ClientDetail() {
         face_shape: report.face_shape!,
         styling_tips: report.styling_tips ?? "",
       });
+      return true;
+    } catch (error) {
+      toast.error("Failed to save report");
+      console.error(error);
+      return false;
+    }
+  };
+
+  /** Download PDF only */
+  const handleDownloadPdf = async () => {
+    if (!(await saveReport())) return;
+    const doc = buildPdf(user, report);
+    doc.save(`Style_Report_${user.name.replace(/\s+/g, "_")}.pdf`);
+    toast.success("PDF downloaded");
+  };
+
+  /** Generate PDF + open email client with pre-filled body */
+  const handleSendEmail = async () => {
+    if (!(await saveReport())) return;
+    setIsSending(true);
+
+    try {
+      // 1. Build & download the PDF
+      const doc = buildPdf(user, report);
+      doc.save(`Style_Report_${user.name.replace(/\s+/g, "_")}.pdf`);
+
+      // 2. Build mailto string
+      const subject = encodeURIComponent("Your Personal Style Report — Nine Profiles");
+      const body = encodeURIComponent(
+        `Dear ${user.name},\n\nPlease find attached your Personal Style Report from Nine Profiles.\n\n` +
+          `Here's a summary of your report:\n\n` +
+          `Best Colours: ${report.best_colours}\n` +
+          `Metal Harmony: ${report.metal_harmony}\n` +
+          `Face Shape: ${report.face_shape}\n\n` +
+          (report.styling_tips ? `Personal Styling Tips:\n${report.styling_tips}\n\n` : "") +
+          `Style for the Life You're Building.\n\nWarm regards,\nNine Profiles · The Personal Style Lab`
+      );
+
+      // 3. Fire mailto via a hidden <a> click — works across browsers unlike window.location
+      const a = document.createElement("a");
+      a.href = `mailto:${user.email}?subject=${subject}&body=${body}`;
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // 4. Update status
       await store.updateUser(user.id, { report_status: "Sent" });
-      // TODO: WhatsApp API integration — send the report PDF/message to user.whatsapp_number.
+      setUser({ ...user, report_status: "Sent" });
+      toast.success("PDF downloaded — attach it in the email client that just opened");
+    } catch (error) {
+      toast.error("Failed to generate report");
+      console.error(error);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  /** Original mark-as-sent flow */
+  const handleSend = async () => {
+    if (!(await saveReport())) return;
+    try {
+      await store.updateUser(user.id, { report_status: "Sent" });
       setUser({ ...user, report_status: "Sent" });
       toast.success("Report Successfully Marked as Sent");
     } catch (error) {
-      toast.error("Failed to send report");
+      toast.error("Failed to update report status");
       console.error(error);
     }
   };
@@ -129,9 +313,34 @@ function ClientDetail() {
             />
           </div>
 
-          <Button onClick={handleSend} className="w-full h-12 rounded-none tracking-luxe text-xs">
-            Send Report
-          </Button>
+          {/* Action buttons */}
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={handleDownloadPdf}
+              variant="outline"
+              className="w-full h-12 rounded-none tracking-luxe text-xs gap-2"
+            >
+              <FileDown className="h-4 w-4" />
+              Download PDF
+            </Button>
+
+            <Button
+              onClick={handleSendEmail}
+              disabled={isSending}
+              className="w-full h-12 rounded-none tracking-luxe text-xs gap-2"
+            >
+              <Mail className="h-4 w-4" />
+              {isSending ? "Preparing…" : `Send PDF to ${user.email}`}
+            </Button>
+
+            <Button
+              onClick={handleSend}
+              variant="ghost"
+              className="w-full h-10 rounded-none tracking-luxe text-xs text-muted-foreground"
+            >
+              Mark as Sent (no email)
+            </Button>
+          </div>
         </div>
 
         <div>
