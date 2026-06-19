@@ -24,22 +24,13 @@ function PaymentPage() {
     setUserId(id);
   }, [navigate]);
 
-  const handlePay = async () => {
+  const handlePay = () => {
     if (!userId) return;
+
     setProcessing(true);
-    try {
-      // TODO: Razorpay integration goes here.
-      // Initialize Razorpay checkout with order_id from backend, handle success callback,
-      // then call store.updateUser(userId, { payment_status: "Completed" }).
-      await new Promise(resolve => setTimeout(resolve, 700));
-      await store.updateUser(userId, { payment_status: "Completed" });
-      toast.success("Payment successful");
-      navigate({ to: "/thank-you" });
-    } catch (error) {
-      toast.error("Payment failed. Please try again.");
-      console.error(error);
-      setProcessing(false);
-    }
+
+    // Razorpay Payment Link
+    window.location.href = "https://rzp.io/rzp/IVzBG1uu";
   };
 
   return (
