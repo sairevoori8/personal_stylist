@@ -31,7 +31,7 @@ function PaymentPage() {
     setProcessing(true);
 
     // Razorpay Payment Link
-    window.location.href = "https://rzp.io/rzp/IVzBG1uu";
+    window.location.href = "https://pages.razorpay.com/pl_T3cvMuhZnTJMo5/view";
   };
 
   return (

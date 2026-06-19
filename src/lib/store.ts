@@ -194,4 +194,4 @@ export const store = {
   },
 };
 
-export const REPORT_PRICE = 2499;
+export const REPORT_PRICE = 499;
