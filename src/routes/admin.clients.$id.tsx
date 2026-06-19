@@ -23,11 +23,12 @@ const FACES = ["Oval", "Square", "Triangle", "Diamond", "Inverted Triangle", "Ro
 // ─── PDF Generation ──────────────────────────────────────────────────────────
 
 function buildPdf(user: User, report: Partial<Report>): jsPDF {
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const doc = new jsPDF({ unit: "pt", format: "a5" });
   const W = doc.internal.pageSize.getWidth();
   const margin = 56;
   const colRight = W - margin;
   let y = 0;
+  let x=170;
 
   // Top accent bar
   doc.setFillColor(20, 20, 20);
@@ -39,15 +40,15 @@ function buildPdf(user: User, report: Partial<Report>): jsPDF {
   doc.setFontSize(7);
   doc.setTextColor(140, 140, 140);
   doc.setCharSpace(2);
-  doc.text("NINE PROFILES  ·  THE PERSONAL STYLE LAB", W / 2, y, { align: "center" });
-  y += 28;
+  doc.text("NINE PROFILES  ·  THE PERSONAL STYLE LAB", x, y, { align: "center" });
+  y += 24;
 
   // Title
   doc.setFont("times", "bold");
-  doc.setFontSize(28);
+  doc.setFontSize(20);
   doc.setTextColor(20, 20, 20);
   doc.setCharSpace(0);
-  doc.text("Personal Style Report", W / 2, y, { align: "center" });
+  doc.text("Personal Style Report", W/2, y, { align: "center" });
   y += 20;
 
   // Divider
@@ -62,14 +63,14 @@ function buildPdf(user: User, report: Partial<Report>): jsPDF {
   doc.setTextColor(140, 140, 140);
   doc.setCharSpace(2);
   doc.text("PREPARED FOR", margin, y);
-  y += 16;
+  y += 20;
 
   doc.setFont("times", "normal");
-  doc.setFontSize(22);
+  doc.setFontSize(15);
   doc.setTextColor(20, 20, 20);
   doc.setCharSpace(0);
   doc.text(user.name, margin, y);
-  y += 32;
+  y += 20;
 
   // Report rows
   const rows = [
@@ -92,7 +93,7 @@ function buildPdf(user: User, report: Partial<Report>): jsPDF {
     doc.text(row.label, margin, y);
 
     doc.setFont("times", "normal");
-    doc.setFontSize(16);
+    doc.setFontSize(10);
     doc.setTextColor(20, 20, 20);
     doc.setCharSpace(0);
     doc.text(row.value || "—", colRight, y, { align: "right" });
@@ -130,7 +131,7 @@ function buildPdf(user: User, report: Partial<Report>): jsPDF {
   doc.setFontSize(7);
   doc.setTextColor(140, 140, 140);
   doc.setCharSpace(2);
-  doc.text("STYLE FOR THE LIFE YOU'RE BUILDING", W / 2, y, { align: "center" });
+  doc.text("STYLE FOR THE LIFE YOU'RE BUILDING", x, y, { align: "center" });
 
   return doc;
 }
