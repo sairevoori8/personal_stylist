@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { store, type User, type Report } from "@/lib/store";
+import { sendReportEmail } from "@/lib/email";
 import { toast } from "sonner";
 import { ArrowLeft, FileDown, Mail } from "lucide-react";
 import jsPDF from "jspdf";
@@ -203,42 +204,33 @@ function ClientDetail() {
     toast.success("PDF downloaded");
   };
 
-  /** Generate PDF + open email client with pre-filled body */
+  /** Generate PDF + send via Resend API */
   const handleSendEmail = async () => {
     if (!(await saveReport())) return;
     setIsSending(true);
 
     try {
-      // 1. Build & download the PDF
+      // 1. Build the PDF
       const doc = buildPdf(user, report);
-      doc.save(`Style_Report_${user.name.replace(/\s+/g, "_")}.pdf`);
 
-      // 2. Build mailto string
-      const subject = encodeURIComponent("Your Personal Style Report — Nine Profiles");
-      const body = encodeURIComponent(
-        `Dear ${user.name},\n\nPlease find attached your Personal Style Report from Nine Profiles.\n\n` +
-          `Here's a summary of your report:\n\n` +
-          `Best Colours: ${report.best_colours}\n` +
-          `Metal Harmony: ${report.metal_harmony}\n` +
-          `Face Shape: ${report.face_shape}\n\n` +
-          (report.styling_tips ? `Personal Styling Tips:\n${report.styling_tips}\n\n` : "") +
-          `Style for the Life You're Building.\n\nWarm regards,\nNine Profiles · The Personal Style Lab`
-      );
+      // 2. Convert PDF to Base64
+      const pdfOutput = doc.output("arraybuffer");
+      const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfOutput)));
 
-      // 3. Fire mailto via a hidden <a> click — works across browsers unlike window.location
-      const a = document.createElement("a");
-      a.href = `mailto:${user.email}?subject=${subject}&body=${body}`;
-      a.rel = "noopener";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      // 3. Send via Resend API
+      await sendReportEmail({
+        to: user.email,
+        userName: user.name,
+        pdfBase64,
+        pdfFileName: `Style_Report_${user.name.replace(/\s+/g, "_")}.pdf`
+      });
 
       // 4. Update status
       await store.updateUser(user.id, { report_status: "Sent" });
       setUser({ ...user, report_status: "Sent" });
-      toast.success("PDF downloaded — attach it in the email client that just opened");
+      toast.success("Report sent successfully!");
     } catch (error) {
-      toast.error("Failed to generate report");
+      toast.error("Failed to send report. Please try again.");
       console.error(error);
     } finally {
       setIsSending(false);
