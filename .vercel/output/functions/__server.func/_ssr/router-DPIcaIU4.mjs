@@ -2,11 +2,11 @@ import { o as __toESM } from "../_runtime.mjs";
 import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
 import { _ as useRouter, c as HeadContent, d as Outlet, f as lazyRouteComponent, h as Link, m as createRootRouteWithContext, p as createFileRoute, s as Scripts, u as createRouter } from "../_libs/@tanstack/react-router+[...].mjs";
 import { s as require_jsx_runtime } from "../_libs/@radix-ui/react-arrow+[...].mjs";
-import { t as Route$7 } from "./admin.clients._id-CUM0p8W9.mjs";
+import { t as Route$7 } from "./admin.clients._id-CtdCLSQe.mjs";
 import { t as Toaster } from "../_libs/sonner.mjs";
 import { t as QueryClient } from "../_libs/tanstack__query-core.mjs";
 import { t as QueryClientProvider } from "../_libs/tanstack__react-query.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-DlQYeHPY.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-DPIcaIU4.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var Toaster$1 = ({ ...props }) => {
@@ -175,14 +175,14 @@ var Route$5 = createFileRoute("/thank-you")({
 	head: () => ({ meta: [{ title: "Thank You — The Personal Style Lab" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$5, "component")
 });
-var $$splitComponentImporter$4 = () => import("./payment-yE3Z43SB.mjs");
+var $$splitComponentImporter$4 = () => import("./payment-CP4XQeSk.mjs");
 var Route$4 = createFileRoute("/payment")({
 	head: () => ({ meta: [{ title: "Payment — The Personal Style Lab" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$4, "component")
 });
 var $$splitComponentImporter$3 = () => import("./admin-rRckGftk.mjs");
 var Route$3 = createFileRoute("/admin")({ component: lazyRouteComponent($$splitComponentImporter$3, "component") });
-var $$splitComponentImporter$2 = () => import("./routes-DCYFrNZZ.mjs");
+var $$splitComponentImporter$2 = () => import("./routes-DWYFntPM.mjs");
 var Route$2 = createFileRoute("/")({
 	head: () => ({ meta: [{ title: "The Personal Style Lab — by Nine Profiles" }, {
 		name: "description",
@@ -190,12 +190,12 @@ var Route$2 = createFileRoute("/")({
 	}] }),
 	component: lazyRouteComponent($$splitComponentImporter$2, "component")
 });
-var $$splitComponentImporter$1 = () => import("./admin.index-Cx_8D5FR.mjs");
+var $$splitComponentImporter$1 = () => import("./admin.index-BeH8QECa.mjs");
 var Route$1 = createFileRoute("/admin/")({
 	head: () => ({ meta: [{ title: "Admin Login — The Personal Style Lab" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-var $$splitComponentImporter = () => import("./admin.dashboard-VyZmXIF-.mjs");
+var $$splitComponentImporter = () => import("./admin.dashboard-BNyqHqLJ.mjs");
 var Route = createFileRoute("/admin/dashboard")({
 	head: () => ({ meta: [{ title: "Dashboard — Admin" }] }),
 	component: lazyRouteComponent($$splitComponentImporter, "component")

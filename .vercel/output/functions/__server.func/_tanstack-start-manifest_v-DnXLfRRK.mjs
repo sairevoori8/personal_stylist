@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-DiYIJgMQ.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-DnXLfRRK.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
 		filePath: "C:/Users/saikr/OneDrive/Desktop/project9/psl/src/routes/__root.tsx",
@@ -9,7 +9,7 @@ var tsrStartManifest = () => ({ routes: {
 			"/thank-you"
 		],
 		preloads: [
-			"/assets/index-BGTRT9Os.js",
+			"/assets/index-DT6mQIgH.js",
 			"/assets/chunk-Bh1tDfsg.js",
 			"/assets/useStore-Dpa9RLQz.js",
 			"/assets/useRouter-BeG5N71-.js",
@@ -18,18 +18,18 @@ var tsrStartManifest = () => ({ routes: {
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-BGTRT9Os.js"
+			src: "/assets/index-DT6mQIgH.js"
 		} }]
 	},
 	"/": {
 		filePath: "C:/Users/saikr/OneDrive/Desktop/project9/psl/src/routes/index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/routes-DZAp6GZU.js",
+			"/assets/routes-2Ffvv8mk.js",
 			"/assets/button-BH3JvmeS.js",
 			"/assets/label-D9Ybt2zi.js",
-			"/assets/store-A3YP0zd1.js",
-			"/assets/Brand-DRRjAM__.js",
+			"/assets/store-DDClFV9V.js",
+			"/assets/Brand-BhCoSgdz.js",
 			"/assets/input-BHgM8c9Y.js"
 		]
 	},
@@ -40,23 +40,23 @@ var tsrStartManifest = () => ({ routes: {
 			"/admin/",
 			"/admin/clients/$id"
 		],
-		preloads: ["/assets/admin-Df-etola.js"]
+		preloads: ["/assets/admin-BLXsthL3.js"]
 	},
 	"/payment": {
 		filePath: "C:/Users/saikr/OneDrive/Desktop/project9/psl/src/routes/payment.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/payment-BgylouVf.js",
+			"/assets/payment-Crdh8SCO.js",
 			"/assets/button-BH3JvmeS.js",
-			"/assets/store-A3YP0zd1.js",
-			"/assets/Brand-DRRjAM__.js"
+			"/assets/store-DDClFV9V.js",
+			"/assets/Brand-BhCoSgdz.js"
 		]
 	},
 	"/thank-you": {
 		filePath: "C:/Users/saikr/OneDrive/Desktop/project9/psl/src/routes/thank-you.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/thank-you-CSAZ2qSV.js",
+			"/assets/thank-you-TMWv6z_r.js",
 			"/assets/button-BH3JvmeS.js",
 			"/assets/check-JXl1IXYP.js"
 		]
@@ -65,11 +65,11 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "C:/Users/saikr/OneDrive/Desktop/project9/psl/src/routes/admin.dashboard.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/admin.dashboard-C8J1x2ha.js",
-			"/assets/dist-CLnP8QRz.js",
+			"/assets/admin.dashboard-DPfR9GEW.js",
+			"/assets/dist-C3a0R7oR.js",
 			"/assets/button-BH3JvmeS.js",
 			"/assets/dist-VYiqXzDb.js",
-			"/assets/store-A3YP0zd1.js",
+			"/assets/store-DDClFV9V.js",
 			"/assets/createLucideIcon-BZ-v_4jb.js",
 			"/assets/check-JXl1IXYP.js",
 			"/assets/input-BHgM8c9Y.js"
@@ -79,10 +79,10 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "C:/Users/saikr/OneDrive/Desktop/project9/psl/src/routes/admin.index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/admin.index-DOYYrsF9.js",
+			"/assets/admin.index-D_dsu9UF.js",
 			"/assets/button-BH3JvmeS.js",
 			"/assets/label-D9Ybt2zi.js",
-			"/assets/store-A3YP0zd1.js",
+			"/assets/store-DDClFV9V.js",
 			"/assets/input-BHgM8c9Y.js"
 		]
 	},
@@ -90,13 +90,13 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "C:/Users/saikr/OneDrive/Desktop/project9/psl/src/routes/admin.clients.$id.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/admin.clients._id-BWOXKA8t.js",
+			"/assets/admin.clients._id-Cwx0qZaD.js",
 			"/assets/typeof-B5XbjTb1.js",
-			"/assets/dist-CLnP8QRz.js",
+			"/assets/dist-C3a0R7oR.js",
 			"/assets/button-BH3JvmeS.js",
 			"/assets/label-D9Ybt2zi.js",
 			"/assets/dist-VYiqXzDb.js",
-			"/assets/store-A3YP0zd1.js",
+			"/assets/store-DDClFV9V.js",
 			"/assets/createLucideIcon-BZ-v_4jb.js"
 		]
 	}

@@ -2,10 +2,10 @@ import { o as __toESM } from "../_runtime.mjs";
 import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
 import { g as useNavigate } from "../_libs/@tanstack/react-router+[...].mjs";
 import { s as require_jsx_runtime } from "../_libs/@radix-ui/react-arrow+[...].mjs";
-import { n as store, t as REPORT_PRICE } from "./store-DVSyp8Ru.mjs";
+import { t as store } from "./store-VC9iouhy.mjs";
 import { t as Button } from "./button-DRsC1qZi.mjs";
 import { t as Brand } from "./Brand-SfKC6J_m.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/payment-yE3Z43SB.js
+//#region node_modules/.nitro/vite/services/ssr/assets/payment-CP4XQeSk.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function PaymentPage() {
@@ -23,7 +23,7 @@ function PaymentPage() {
 	const handlePay = () => {
 		if (!userId) return;
 		setProcessing(true);
-		window.location.href = "https://rzp.io/rzp/IVzBG1uu";
+		window.location.href = "https://rzp.io/rzp/M4CgLaCb";
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "min-h-screen flex flex-col",
@@ -51,7 +51,7 @@ function PaymentPage() {
 									children: "Amount"
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 									className: "font-display text-4xl",
-									children: ["₹", REPORT_PRICE.toLocaleString("en-IN")]
+									children: ["₹", 499 .toLocaleString("en-IN")]
 								})]
 							})
 						]

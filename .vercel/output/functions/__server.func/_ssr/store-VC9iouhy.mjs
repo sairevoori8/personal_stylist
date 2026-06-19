@@ -1,5 +1,5 @@
 import { t as createClient } from "../_libs/supabase__supabase-js.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/store-DVSyp8Ru.js
+//#region node_modules/.nitro/vite/services/ssr/assets/store-VC9iouhy.js
 var supabase = createClient("https://vypojzkqcaevhiaziscf.supabase.co", "sb_publishable_WB1jXPYIegaIIh2ubdMvhw_hqW-cvBx");
 var SESSION_KEY = "psl_current_user";
 var ADMIN_KEY = "psl_admin_session";
@@ -127,6 +127,5 @@ var store = {
 		if (isBrowser()) localStorage.removeItem(ADMIN_KEY);
 	}
 };
-var REPORT_PRICE = 2499;
 //#endregion
-export { store as n, REPORT_PRICE as t };
+export { store as t };
