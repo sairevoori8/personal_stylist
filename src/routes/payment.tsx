@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Brand } from "@/components/Brand";
 import { Button } from "@/components/ui/button";
 import { REPORT_PRICE, store } from "@/lib/store";
+import { sendPaymentConfirmationEmail } from "@/lib/email";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/payment")({
