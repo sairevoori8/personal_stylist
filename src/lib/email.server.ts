@@ -1,21 +1,13 @@
 import { Resend } from 'resend';
 
-const envid = "re_Cm2rqf9j_F2EAgDuy9zsnTfzyw5hXixcr";
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const resend = new Resend(envid);
-export interface SendReportEmailParams {
-  to: string;
-  userName: string;
-  pdfBase64: string; // Base64 encoded PDF
-  pdfFileName?: string;
-}
-
-export async function sendReportEmail({
-  to,
-  userName,
-  pdfBase64,
-  pdfFileName = 'personal-style-report.pdf'
-}: SendReportEmailParams) {
+export async function sendReportEmailServer(
+  to: string,
+  userName: string,
+  pdfBase64: string,
+  pdfFileName: string = 'personal-style-report.pdf'
+) {
   try {
     const response = await resend.emails.send({
       from: 'Nine Profiles <kayatarun2004@gmail.com>',
@@ -81,15 +73,11 @@ export async function sendReportEmail({
   }
 }
 
-export async function sendPaymentConfirmationEmail({
-  to,
-  userName,
-  amount
-}: {
-  to: string;
-  userName: string;
-  amount: number;
-}) {
+export async function sendPaymentConfirmationEmailServer(
+  to: string,
+  userName: string,
+  amount: number
+) {
   try {
     const response = await resend.emails.send({
       from: 'Nine Profiles <kayatarun2004@gmail.com>',
