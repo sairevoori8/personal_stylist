@@ -1,5 +1,5 @@
 // Mock database backed by localStorage.
-// TODO: Replace with  Cloud (Supabase) tables: users, reports.
+// TODO: Replace with Lovable Cloud (Supabase) tables: users, reports.
 
 export type PaymentStatus = "Completed" | "Not Completed";
 export type ReportStatus = "Sent" | "Not Sent";
@@ -101,7 +101,7 @@ export const store = {
   },
 
   adminLogin(username: string, password: string): boolean {
-    // Placeholder auth. TODO: replace with real  Cloud auth + roles.
+    // Placeholder auth. TODO: replace with real Lovable Cloud auth + roles.
     if (username === "admin" && password === "admin") {
       write(ADMIN_KEY, true);
       return true;
@@ -117,4 +117,3 @@ export const store = {
 };
 
 export const REPORT_PRICE = 2499;
-

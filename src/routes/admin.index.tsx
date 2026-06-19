@@ -18,7 +18,7 @@ function AdminLogin() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Replace placeholder auth with  Cloud auth + role check.
+    // TODO: Replace placeholder auth with Lovable Cloud auth + role check.
     if (store.adminLogin(username, password)) {
       toast.success("Welcome back");
       navigate({ to: "/admin/dashboard" });
@@ -63,4 +63,3 @@ function AdminLogin() {
     </div>
   );
 }
-

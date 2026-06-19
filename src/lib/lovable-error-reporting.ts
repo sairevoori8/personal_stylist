@@ -1,26 +1,26 @@
-type ErrorOptions = {
+type LovableErrorOptions = {
   mechanism?: "manual" | "onerror" | "unhandledrejection" | "react_error_boundary";
   handled?: boolean;
   severity?: "error" | "warning" | "info";
 };
 
-type Events = {
+type LovableEvents = {
   captureException?: (
     error: unknown,
     context?: Record<string, unknown>,
-    options?: ErrorOptions,
+    options?: LovableErrorOptions,
   ) => void;
 };
 
 declare global {
   interface Window {
-    __Events?: Events;
+    __lovableEvents?: LovableEvents;
   }
 }
 
-export function reportError(error: unknown, context: Record<string, unknown> = {}) {
+export function reportLovableError(error: unknown, context: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
-  window.__Events?.captureException?.(
+  window.__lovableEvents?.captureException?.(
     error,
     {
       source: "react_error_boundary",
@@ -34,4 +34,3 @@ export function reportError(error: unknown, context: Record<string, unknown> = {
     },
   );
 }
-
