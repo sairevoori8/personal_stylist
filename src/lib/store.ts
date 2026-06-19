@@ -1,5 +1,4 @@
-// Mock database backed by localStorage.
-// TODO: Replace with Lovable Cloud (Supabase) tables: users, reports.
+import { supabase } from './supabase';
 
 export type PaymentStatus = "Completed" | "Not Completed";
 export type ReportStatus = "Sent" | "Not Sent";
@@ -24,14 +23,12 @@ export interface Report {
   created_at: string;
 }
 
-const USERS_KEY = "psl_users";
-const REPORTS_KEY = "psl_reports";
 const SESSION_KEY = "psl_current_user";
 const ADMIN_KEY = "psl_admin_session";
 
 const isBrowser = () => typeof window !== "undefined";
 
-function read<T>(key: string, fallback: T): T {
+function readLocal<T>(key: string, fallback: T): T {
   if (!isBrowser()) return fallback;
   try {
     const raw = localStorage.getItem(key);
@@ -41,76 +38,157 @@ function read<T>(key: string, fallback: T): T {
   }
 }
 
-function write<T>(key: string, value: T) {
+function writeLocal<T>(key: string, value: T) {
   if (!isBrowser()) return;
   localStorage.setItem(key, JSON.stringify(value));
 }
 
 export const store = {
-  listUsers(): User[] {
-    return read<User[]>(USERS_KEY, []);
+  async listUsers(): Promise<User[]> {
+    try {
+      const { data, error } = await supabase.from('users').select('*');
+      if (error) throw error;
+      return data || [];
+    } catch (err) {
+      console.error('Failed to list users:', err);
+      return [];
+    }
   },
-  getUser(id: string): User | undefined {
-    return this.listUsers().find((u) => u.id === id);
+
+  async getUser(id: string): Promise<User | undefined> {
+    try {
+      const { data, error } = await supabase.from('users').select('*').eq('id', id).single();
+      if (error) throw error;
+      return data || undefined;
+    } catch (err) {
+      console.error('Failed to get user:', err);
+      return undefined;
+    }
   },
-  createUser(data: Omit<User, "id" | "payment_status" | "report_status" | "created_at">): User {
-    const user: User = {
-      id: crypto.randomUUID(),
-      ...data,
-      payment_status: "Not Completed",
-      report_status: "Not Sent",
-      created_at: new Date().toISOString(),
-    };
-    const users = this.listUsers();
-    users.push(user);
-    write(USERS_KEY, users);
-    write(SESSION_KEY, user.id);
-    return user;
+
+  async createUser(data: Omit<User, "id" | "payment_status" | "report_status" | "created_at">): Promise<User> {
+    try {
+      const { data: user, error } = await supabase
+        .from('users')
+        .insert([{
+          name: data.name,
+          email: data.email,
+          whatsapp_number: data.whatsapp_number,
+          payment_status: 'Not Completed',
+          report_status: 'Not Sent',
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      if (user) writeLocal(SESSION_KEY, user.id);
+      return user;
+    } catch (err) {
+      console.error('Failed to create user:', err);
+      throw err;
+    }
   },
-  updateUser(id: string, patch: Partial<User>) {
-    const users = this.listUsers().map((u) => (u.id === id ? { ...u, ...patch } : u));
-    write(USERS_KEY, users);
+
+  async updateUser(id: string, patch: Partial<User>): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update(patch)
+        .eq('id', id);
+      if (error) throw error;
+    } catch (err) {
+      console.error('Failed to update user:', err);
+      throw err;
+    }
   },
+
   currentUserId(): string | null {
-    return read<string | null>(SESSION_KEY, null);
+    return readLocal<string | null>(SESSION_KEY, null);
   },
+
   clearSession() {
     if (isBrowser()) localStorage.removeItem(SESSION_KEY);
   },
 
-  listReports(): Report[] {
-    return read<Report[]>(REPORTS_KEY, []);
-  },
-  getReportByUser(user_id: string): Report | undefined {
-    return this.listReports().find((r) => r.user_id === user_id);
-  },
-  saveReport(data: Omit<Report, "report_id" | "created_at">): Report {
-    const reports = this.listReports();
-    const existing = reports.find((r) => r.user_id === data.user_id);
-    let report: Report;
-    if (existing) {
-      report = { ...existing, ...data };
-      const idx = reports.indexOf(existing);
-      reports[idx] = report;
-    } else {
-      report = { ...data, report_id: crypto.randomUUID(), created_at: new Date().toISOString() };
-      reports.push(report);
+  async listReports(): Promise<Report[]> {
+    try {
+      const { data, error } = await supabase.from('reports').select('*');
+      if (error) throw error;
+      return data || [];
+    } catch (err) {
+      console.error('Failed to list reports:', err);
+      return [];
     }
-    write(REPORTS_KEY, reports);
-    return report;
   },
 
-  adminLogin(username: string, password: string): boolean {
-    // Placeholder auth. TODO: replace with real Lovable Cloud auth + roles.
-    if (username === "admin" && password === "admin") {
-      write(ADMIN_KEY, true);
-      return true;
+  async getReportByUser(user_id: string): Promise<Report | undefined> {
+    try {
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('user_id', user_id)
+        .single();
+      if (error) throw error;
+      return data || undefined;
+    } catch (err) {
+      console.error('Failed to get report:', err);
+      return undefined;
     }
-    return false;
   },
+
+  async saveReport(data: Omit<Report, "report_id" | "created_at">): Promise<Report> {
+    try {
+      const existing = await this.getReportByUser(data.user_id);
+      let report: Report;
+
+      if (existing) {
+        const { data: updated, error } = await supabase
+          .from('reports')
+          .update(data)
+          .eq('user_id', data.user_id)
+          .select()
+          .single();
+        if (error) throw error;
+        report = updated;
+      } else {
+        const { data: created, error } = await supabase
+          .from('reports')
+          .insert([data])
+          .select()
+          .single();
+        if (error) throw error;
+        report = created;
+      }
+
+      return report;
+    } catch (err) {
+      console.error('Failed to save report:', err);
+      throw err;
+    }
+  },
+
+  async adminLogin(username: string, password: string): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .from('admin_accounts')
+        .select('*')
+        .eq('username', username)
+        .eq('password_hash', password)
+        .single();
+
+      if (error || !data) return false;
+      writeLocal(ADMIN_KEY, true);
+      return true;
+    } catch (err) {
+      console.error('Admin login failed:', err);
+      return false;
+    }
+  },
+
   isAdmin(): boolean {
-    return read<boolean>(ADMIN_KEY, false);
+    return readLocal<boolean>(ADMIN_KEY, false);
   },
+
   adminLogout() {
     if (isBrowser()) localStorage.removeItem(ADMIN_KEY);
   },

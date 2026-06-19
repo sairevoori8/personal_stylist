@@ -35,7 +35,7 @@ function RegistrationPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse(values);
     if (!parsed.success) {
@@ -48,9 +48,15 @@ function RegistrationPage() {
     }
     setErrors({});
     setSubmitting(true);
-    store.createUser(parsed.data);
-    toast.success("Registration complete");
-    navigate({ to: "/payment" });
+    try {
+      await store.createUser(parsed.data);
+      toast.success("Registration complete");
+      navigate({ to: "/payment" });
+    } catch (error) {
+      toast.error("Registration failed. Please try again.");
+      console.error(error);
+      setSubmitting(false);
+    }
   };
 
   return (

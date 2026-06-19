@@ -30,34 +30,47 @@ function ClientDetail() {
   });
 
   useEffect(() => {
-    const u = store.getUser(id);
-    if (!u) {
-      navigate({ to: "/admin/dashboard" });
-      return;
-    }
-    setUser(u);
-    const existing = store.getReportByUser(id);
-    if (existing) setReport(existing);
+    const loadData = async () => {
+      try {
+        const u = await store.getUser(id);
+        if (!u) {
+          navigate({ to: "/admin/dashboard" });
+          return;
+        }
+        setUser(u);
+        const existing = await store.getReportByUser(id);
+        if (existing) setReport(existing);
+      } catch (error) {
+        console.error('Failed to load client data:', error);
+        navigate({ to: "/admin/dashboard" });
+      }
+    };
+    loadData();
   }, [id, navigate]);
 
   if (!user) return null;
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!report.best_colours || !report.metal_harmony || !report.face_shape) {
       toast.error("Please complete all report fields");
       return;
     }
-    store.saveReport({
-      user_id: user.id,
-      best_colours: report.best_colours!,
-      metal_harmony: report.metal_harmony!,
-      face_shape: report.face_shape!,
-      styling_tips: report.styling_tips ?? "",
-    });
-    store.updateUser(user.id, { report_status: "Sent" });
-    // TODO: WhatsApp API integration — send the report PDF/message to user.whatsapp_number.
-    setUser({ ...user, report_status: "Sent" });
-    toast.success("Report Successfully Marked as Sent");
+    try {
+      await store.saveReport({
+        user_id: user.id,
+        best_colours: report.best_colours!,
+        metal_harmony: report.metal_harmony!,
+        face_shape: report.face_shape!,
+        styling_tips: report.styling_tips ?? "",
+      });
+      await store.updateUser(user.id, { report_status: "Sent" });
+      // TODO: WhatsApp API integration — send the report PDF/message to user.whatsapp_number.
+      setUser({ ...user, report_status: "Sent" });
+      toast.success("Report Successfully Marked as Sent");
+    } catch (error) {
+      toast.error("Failed to send report");
+      console.error(error);
+    }
   };
 
   return (

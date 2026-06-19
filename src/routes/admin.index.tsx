@@ -16,14 +16,19 @@ function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Replace placeholder auth with Lovable Cloud auth + role check.
-    if (store.adminLogin(username, password)) {
-      toast.success("Welcome back");
-      navigate({ to: "/admin/dashboard" });
-    } else {
-      toast.error("Invalid credentials");
+    try {
+      const success = await store.adminLogin(username, password);
+      if (success) {
+        toast.success("Welcome back");
+        navigate({ to: "/admin/dashboard" });
+      } else {
+        toast.error("Invalid credentials");
+      }
+    } catch (error) {
+      toast.error("Login failed. Please try again.");
+      console.error(error);
     }
   };
 

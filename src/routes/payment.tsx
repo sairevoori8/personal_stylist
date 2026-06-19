@@ -24,17 +24,22 @@ function PaymentPage() {
     setUserId(id);
   }, [navigate]);
 
-  const handlePay = () => {
+  const handlePay = async () => {
     if (!userId) return;
     setProcessing(true);
-    // TODO: Razorpay integration goes here.
-    // Initialize Razorpay checkout with order_id from backend, handle success callback,
-    // then call store.updateUser(userId, { payment_status: "Completed" }).
-    setTimeout(() => {
-      store.updateUser(userId, { payment_status: "Completed" });
+    try {
+      // TODO: Razorpay integration goes here.
+      // Initialize Razorpay checkout with order_id from backend, handle success callback,
+      // then call store.updateUser(userId, { payment_status: "Completed" }).
+      await new Promise(resolve => setTimeout(resolve, 700));
+      await store.updateUser(userId, { payment_status: "Completed" });
       toast.success("Payment successful");
       navigate({ to: "/thank-you" });
-    }, 700);
+    } catch (error) {
+      toast.error("Payment failed. Please try again.");
+      console.error(error);
+      setProcessing(false);
+    }
   };
 
   return (

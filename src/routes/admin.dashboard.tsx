@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/AdminShell";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { store } from "@/lib/store";
+import { store, type User } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Admin" }] }),
@@ -21,13 +21,23 @@ function Dashboard() {
   const [query, setQuery] = useState("");
   const [payment, setPayment] = useState("all");
   const [report, setReport] = useState("all");
-  const [tick, setTick] = useState(0);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const users = useMemo(() => {
-    // re-read on tick
-    void tick;
-    return store.listUsers();
-  }, [tick]);
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        const data = await store.listUsers();
+        setUsers(data);
+      } catch (error) {
+        console.error('Failed to load users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadUsers();
+  }, []);
 
   const filtered = users.filter((u) => {
     const q = query.trim().toLowerCase();
@@ -126,8 +136,17 @@ function Dashboard() {
 
       <div className="mt-6 text-xs text-muted-foreground">
         Showing {filtered.length} of {users.length} clients ·{" "}
-        <button onClick={() => setTick((t) => t + 1)} className="underline underline-offset-2">
-          Refresh
+        <button
+          onClick={async () => {
+            setLoading(true);
+            const data = await store.listUsers();
+            setUsers(data);
+            setLoading(false);
+          }}
+          className="underline underline-offset-2"
+          disabled={loading}
+        >
+          {loading ? 'Refreshing...' : 'Refresh'}
         </button>
       </div>
     </AdminShell>
